@@ -1,0 +1,15 @@
+{
+    "name": "eliqroo",
+    "version": "1.0.0",
+    "description": "Aplicación de administración para los procesos de E.L.I. en Tulum, Quintana Roo.",
+    "main": "index.js",
+    "scripts": {
+        "test": "nodemon index.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.18.2"
+    }
+}
