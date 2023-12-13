@@ -1,5 +1,11 @@
 @charset "UTF-8";
+
 /*!
  * Copyright 2024 - Eazicom Servicios Profesionales
  * Todos los derechos reservados.
  */
+
+.image-brand {
+    width: 50%;
+    height: 50%;
+}

@@ -4,4 +4,5 @@
  * Todos los derechos reservados.
  * */
 
+ require_once( "Global.php" );
  require_once( 'shared/start.view.phtml' );
