@@ -27,9 +27,8 @@ class AppSettings extends Configuration {
      *
      */
     public function key( string $key ): string {
-        $value = $this->config[ "app_settings" ][ $key ];
-        if( isset( $value ) ) {
-            return $value;
+        if( isset( $this->config[ "app_settings" ][ $key ] ) ) {
+            return $this->config[ "app_settings" ][ $key ];
         }
         return "";
     }

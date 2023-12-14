@@ -5,4 +5,4 @@
  * Todos los derechos reservados.
  * */
 
-require_once( 'views/layout.php' );
+require_once( 'Views/_ViewStart.php' );

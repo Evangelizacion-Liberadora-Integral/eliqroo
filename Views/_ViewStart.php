@@ -5,4 +5,4 @@
  * */
 
  require_once( "Global.php" );
- require_once( 'shared/start.view.phtml' );
+ require_once( 'Shared/_Layout.phtml' );
