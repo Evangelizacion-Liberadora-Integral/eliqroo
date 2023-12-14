@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Evangelización Liberadora Integral.
  * Sistema de informaciòn para los Centros de Evangelizaciòn Liberadora
