@@ -10,9 +10,10 @@
  */
 
 require_once( "Config/AppSettings.php" );
-
 $config = new AppSettings( "AppConfig.ini" );
-define( "BASE", $config->key( "base" ) );
+
+// Define la constante que contiene la URL base de la aplicación.
+$config->createConstant( "base_url" );
 
 // Establece la zona horaria de Nueva York.
 date_default_timezone_set( 'America/New_York' );

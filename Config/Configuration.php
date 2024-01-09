@@ -40,7 +40,19 @@ abstract class Configuration {
     }
 
     /**
+     * Define una constante con la configuración establecida en el archivo de
+     * configuración.
+     * @param string $setting Nombre de la configuraciòn dentro del archivo.
+     */
+    protected function createConstant( string $setting ): void {
+        $value = setting( $setting );
+        if( "" !== $value ) {
+            define( strtoupper( $setting ), $value );
+        }
+    }
+
+    /**
      * Obtiene
      */
-    public abstract function key( string $key ): string;
+    public abstract function setting( string $key ): string;
 }
