@@ -8,6 +8,7 @@
  */
 
 const { Connection } = require( 'tedious' );
+const SqlCommand = require( './sqlcommand' );
 
 /**
  * Configuración para establecer conexión con SQL Server.
@@ -82,10 +83,13 @@ class SqlConnection {
     }
 
     /**
-     * Crea
+     * Crea y devuelve un objeto {@link SqlCommand} asociado a la conexión
+     * {@link SqlConnection}.
+     * @public
+     * @returns {SqlCommand} - Un objeto {@link SqlCommand}.
      */
     createCommand() {
-
+        return ( new SqlCommand( this ) );
     }
 
     /**
