@@ -1,0 +1,5 @@
+# VS Code
+.vscode/*
+
+# Módulos de NodeJS
+node_modules/*

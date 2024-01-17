@@ -1,0 +1,17 @@
+{
+    "name": "eliqroo",
+    "version": "0.1.0",
+    "description": "Sistema de información para los Centros de Evangelización Liberadora Integral aperturados en Quintana Roo.",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "nodemon index.js"
+    },
+    "author": "Eric A. Rodríguez S.",
+    "license": "ISC",
+    "dependencies": {
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "tedious": "^16.6.1"
+    }
+}
