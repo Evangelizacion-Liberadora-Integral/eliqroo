@@ -60,6 +60,10 @@ class SqlConnection {
             this._connectionConfig = connectionConfig;
     }
 
+    beginTransaction() {
+
+    }
+
     /**
      * Abre de manera asíncrona una conexión a una base de datos con los
      * valores de propiedad especificados por {@link ConnectionConfig}.
