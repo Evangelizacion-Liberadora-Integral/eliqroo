@@ -8,7 +8,8 @@
  */
 
 const { Connection } = require( 'tedious' );
-const SqlCommand = require( './sqlcommand' );
+const { SqlCommand } = require( './sqlcommand' );
+const SqlTransaction = require( './sqltransaction' );
 
 /**
  * Configuración para establecer conexión con SQL Server.
@@ -60,8 +61,11 @@ class SqlConnection {
             this._connectionConfig = connectionConfig;
     }
 
+    /**
+     * @returns { SqlTransaction }
+     */
     beginTransaction() {
-
+        return new SqlTransaction()
     }
 
     /**
@@ -74,9 +78,9 @@ class SqlConnection {
             ( resolve, reject ) => {
                 if ( this._connectionConfig ) {
                     this._connection = new Connection( this._connectionConfig );
-                    this._connection.connect( ( ex ) => {
-                        ( ex )
-                            ? reject( ex.message )
+                    this._connection.connect( ( error ) => {
+                        ( error )
+                            ? reject( error.message )
                             : resolve()
                     } );
                 } else {
@@ -90,7 +94,7 @@ class SqlConnection {
      * Crea y devuelve un objeto {@link SqlCommand} asociado a la conexión
      * {@link SqlConnection}.
      * @public
-     * @returns {SqlCommand} - Un objeto {@link SqlCommand}.
+     * @returns {SqlCommand} Un objeto {@link SqlCommand}.
      */
     createCommand() {
         return ( new SqlCommand( this ) );
