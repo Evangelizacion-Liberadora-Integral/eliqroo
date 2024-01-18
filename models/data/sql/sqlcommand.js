@@ -16,6 +16,7 @@ const {
 } = require( 'tedious' );
 
 const SqlConnection = require( './sqlconnection' );
+const SqlParameter = require( './sqlparameter' );
 
 /**
  * Especifica cómo se interpreta una cadena de comandos.
@@ -38,6 +39,38 @@ const CommandType = {
  */
 class SqlCommand {
 
+    //#region -- Definición de variables --
+
+    /**
+     * Instrucción de Transact-SQL, nombre de la tabla o procedimiento
+     * almacenado a ejecutar en el origen de datos.
+     * @private @type { string }
+     */
+    _commandText = '';
+
+    /**
+     * Tiempo de espera (en milisegundos) antes de finalizar la ejecución
+     * de un comando y generar un error.
+     * @private @type { number }
+     */
+    _commandTimeout = 30000;
+
+    /**
+     * Uno de los valores de {@link CommandType}.
+     * @private @type { number }
+     * @default TEXT
+     */
+    _commandType = CommandType.TEXT;
+
+    /**
+     * @private @type { SqlParameter[] }
+     */
+    _parameters = [];
+
+    //#endregion
+
+    //#region -- Definición de propiedades --
+
     /**
      * Obtiene y/o establece la instrucción de Transact-SQL, nombre de la tabla
      * o procedimiento almacenado a ejecutar en el origen de datos.
@@ -54,6 +87,30 @@ class SqlCommand {
     set commandText( value ) {
         if ( value !== this._commandText ) {
             this._commandText = value;
+        }
+    }
+
+    /**
+     * Obtiene y/o establece el tiempo de espera (en segundos) antes de
+     * finalizar la ejecución de un comando y generar un error.
+     * @default 30
+     * @returns { number }
+     */
+    get commandTimeout() {
+        if ( this._commandTimeout > 0 ) {
+            return ( this._commandTimeout / 1000 );
+        }
+        return 0;
+    }
+
+    /**
+     * Obtiene y/o establece el tiempo de espera (en segundos) antes de
+     * finalizar la ejecución de un comando y generar un error.
+     * @default 30
+     */
+    set commandTimeout( value ) {
+        if ( value !== ( this._commandTimeout / 1000 ) ) {
+            this._commandTimeout = value * 1000;
         }
     }
 
@@ -83,6 +140,8 @@ class SqlCommand {
         return this._connection;
     }
 
+    //#endregion
+
     /**
      * Inicializa una nueva instancia de la clase {@link SqlCommand} con una
      * {@link SqlConnection}.
@@ -90,19 +149,6 @@ class SqlCommand {
      * representa la conexión a una instancia de SQL Server.
      */
     constructor( connection ) {
-        /**
-         * Instrucción de Transact-SQL, nombre de la tabla o procedimiento
-         * almacenado a ejecutar en el origen de datos.
-         * @private @type { string }
-        */
-        this._commandText = '';
-
-        /**
-         * Uno de los valores de {@link CommandType}.
-         * @private @type { number }
-         */
-        this._commandType = CommandType.TEXT;
-
         /**
          * Conexión a una base de datos de SQL Server.
          * @private @type { SqlConnection }
