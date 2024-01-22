@@ -16,6 +16,15 @@ const { TYPES } = require( 'tedious' );
  */
 class SqlParameter {
 
+    /**
+     *
+     * @param {string} name Nombre del parámetro.
+     * @param {any} value
+     */
+    constructor( name, value ) {
+
+    }
+
 }
 
 module.exports = SqlParameter;
