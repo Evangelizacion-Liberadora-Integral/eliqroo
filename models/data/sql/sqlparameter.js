@@ -10,7 +10,8 @@
  */
 
 /**
- * @typedef { number|'Infinity' } Length
+ * @typedef { import( 'tedious').ParameterOptions } ParameterOptions
+ * @typedef { import( 'tedious' ).TediousType } DbType
  */
 
 const { TYPES } = require( 'tedious' );
@@ -39,8 +40,7 @@ const ParameterDirection = {
  * Representa un parámetro de {@link SqlCommand}.
  */
 class SqlParameter {
-
-    //#region -- Declaración de variables --
+    //#region -- Variables globales --
 
     /**
      * Uno de los valores de {@link ParameterDirection}.
@@ -49,12 +49,20 @@ class SqlParameter {
     _direction = ParameterDirection.INPUT;
 
     /**
-     * El tamaño máximo en
-     * @private @type { Length }
+     * Nombre del parámetro.
+     * @private @type { string }
      */
-    _length = 0;
+    _name = '';
+
+    /**
+     * Opciones adicionales de tipo especificado con {@link TYPES}.
+     * @private @type { ParameterOptions }
+     */
+    _parameterOptions = {};
 
     //#endregion
+
+    //#region -- Propiedades de clase --
 
     /**
      * Obtiene y/o establece un valor que indica si el parámetro es de sólo
@@ -76,42 +84,60 @@ class SqlParameter {
     }
 
     /**
-     * Obtiene y/o establece la longitud de los 
-     * @param { Length } value
+     * Obtiene el nombre del parámetro.
+     * @returns { string }
      */
-    set length( value ) {
-        if ( value !== this._length )
-            this._length = value;
-    }
-
     get name() {
-        if ( this._name.startsWith( '@' ) ) {
-            return this._name.replace( '@', '' );
-        }
         return this._name;
     }
 
+    /**
+     * Obtiene las opciones adiciones para un valor de {@link TYPES}.
+     * @returns { ParameterOptions }
+     */
+    get parameterOptions() {
+        return this._parameterOptions;
+    }
+
+    /**
+     * Obtiene el tipo de dato del parámetro especificado por {@link TYPES}.
+     * @returns { DbType }
+     */
     get type() {
         return this._type;
     }
 
     /**
+     * Obtiene el valor del parámetro.
+     * @returns { any }
+     */
+    get value() {
+        return this._value;
+    }
+
+    //#endregion
+
+    //#region -- Métodos de construcción --
+
+    /**
      * Inicializa una nueva instancia de la clase {@link SqlParameter} con el
      * nombre, tipo y valor especificados.
      * @param { string } name Nombre del parámetro a mapear.
-     * @param { TYPES } type Uno de los valores de {@link TYPES}.
+     * @param { DbType } type Uno de los valores de {@link TYPES}.
      * @param { any } value El valor del parámetro.
+     * @param { ParameterOptions } [options] Las opciones adiciones para un
+     * valor de {@link TYPES}.
      */
-    constructor( name, type, value ) {
-        /**
-         * Nombre del parámetro a mapear.
-         * @private @type { string }
-         */
-        this._name = name;
+    constructor( name, type, value, options ) {
+        if ( name.startsWith( '@' ) ) {
+            this._name = name.replace( '@', '' );
+        } else {
+            this._name = name;
+        }
 
         /**
          * Uno de los valores de {@link TYPES}.
-         * @private @type { TYPES }
+         * @private @type { DbType }
          */
         this._type = type;
 
@@ -119,15 +145,13 @@ class SqlParameter {
          * El valor del parámetro.
          * @private @type { any }
          */
-        this.value = value;
+        this._value = value;
+
+        if ( options )
+            this._parameterOptions = options;
     }
 
-    /**
-     * 
-     */
-    getOptions() {
-
-    }
+    //#endregion
 }
 
 module.exports = {

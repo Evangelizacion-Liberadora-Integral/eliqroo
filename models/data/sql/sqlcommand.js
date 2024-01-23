@@ -38,7 +38,6 @@ const CommandType = {
  * @since v0.1.0
  */
 class SqlCommand {
-
     //#region -- Definición de variables --
 
     /**
