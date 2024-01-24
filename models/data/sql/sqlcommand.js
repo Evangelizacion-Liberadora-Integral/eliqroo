@@ -16,7 +16,10 @@ const {
 } = require( 'tedious' );
 
 const SqlConnection = require( './sqlconnection' );
-const { SqlParameter } = require( './sqlparameter' );
+const {
+    ParameterDirection,
+    SqlParameter
+} = require( './sqlparameter' );
 
 /**
  * Especifica cómo se interpreta una cadena de comandos.
@@ -164,11 +167,16 @@ class SqlCommand {
     }
 
     /**
-     * 
-     * @param {SqlParameter} param 
+     * Agrega el objeto {@link SqlParameter} especificado al {@link Array}.
+     * @param {SqlParameter} parameter El objeto {@link SqlParameter} a agregar
+     * a la lista.
+     * @param {number} direction Especifica si el parámetro es sólo de entrada
+     * o sólo de salida.
+     * @returns { void } 
      */
-    addParameter( param ) {
-
+    addParameter( parameter, direction = ParameterDirection.INPUT ) {
+        parameter.direction = direction;
+        this._parameters.push( parameter );
     }
 
     /**
@@ -185,6 +193,11 @@ class SqlCommand {
                             : resolve( rowCount );
                     }
                 );
+
+                if ( this.parameters.length > 0 ) {
+                    procedure.a
+                }
+
                 this._connection.valueOf()?.callProcedure( procedure );
             }
         ) ) );
