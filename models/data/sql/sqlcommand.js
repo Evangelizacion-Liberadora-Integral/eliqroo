@@ -16,7 +16,7 @@ const {
 } = require( 'tedious' );
 
 const SqlConnection = require( './sqlconnection' );
-const SqlParameter = require( './sqlparameter' );
+const { SqlParameter } = require( './sqlparameter' );
 
 /**
  * Especifica cómo se interpreta una cadena de comandos.
@@ -62,7 +62,7 @@ class SqlCommand {
     _commandType = CommandType.TEXT;
 
     /**
-     * @private @type { SqlParameter[] }
+     * @private @type { Array<SqlParameter> }
      */
     _parameters = [];
 
@@ -139,6 +139,14 @@ class SqlCommand {
         return this._connection;
     }
 
+    /**
+     * 
+     * @returns { Array<SqlParameter> }
+     */
+    get parameters() {
+        return this._parameters;
+    }
+
     //#endregion
 
     /**
@@ -153,6 +161,14 @@ class SqlCommand {
          * @private @type { SqlConnection }
          */
         this._connection = connection;
+    }
+
+    /**
+     * 
+     * @param {SqlParameter} param 
+     */
+    addParameter( param ) {
+
     }
 
     /**
