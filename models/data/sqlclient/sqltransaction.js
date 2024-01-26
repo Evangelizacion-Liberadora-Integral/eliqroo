@@ -10,12 +10,33 @@
  */
 
 const { Connection } = require( 'tedious' );
+const SqlConnection = require( './sqlconnection' );
 
 /**
  * Representa una transacción de Transact-SQL que se realiza en una base de
  * datos de SQL Server.
  */
 class SqlTransaction {
+
+    /**
+     * @private @type { Connection  | null }
+     */
+    _connection = null;
+
+    /**
+     *
+     * @param { SqlConnection } connection
+     */
+    constructor( connection ) {
+        this._connection = connection.valueOf();
+    }
+
+    /**
+     * @returns { void } No retorna ningún valor.
+     */
+    commit() {
+
+    }
 
 }
 

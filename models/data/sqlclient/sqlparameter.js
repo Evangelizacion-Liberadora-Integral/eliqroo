@@ -12,6 +12,12 @@
 /**
  * @typedef { import( 'tedious').ParameterOptions } ParameterOptions
  * @typedef { import( 'tedious' ).TediousType } DbType
+ *
+ * @module sqlparameter
+ * @typedef { object } DbTypeOptions
+ * @property { number | "max" } [size]
+ * @property { number  } [precision]
+ * @property { number } [scale]
  */
 
 const { TYPES } = require( 'tedious' );

@@ -41,7 +41,8 @@ const CommandType = {
  * @since v0.1.0
  */
 class SqlCommand {
-    //#region -- Definición de variables --
+
+    //#region - Declaración de variables -
 
     /**
      * Instrucción de Transact-SQL, nombre de la tabla o procedimiento
@@ -51,11 +52,11 @@ class SqlCommand {
     _commandText = '';
 
     /**
-     * Tiempo de espera (en milisegundos) antes de finalizar la ejecución
-     * de un comando y generar un error.
+     * Tiempo de espera (en segundos) antes de finalizar la ejecución de un
+     * comando y generar un error.
      * @private @type { number }
      */
-    _commandTimeout = 30000;
+    _commandTimeout = 15;
 
     /**
      * Uno de los valores de {@link CommandType}.
@@ -71,7 +72,7 @@ class SqlCommand {
 
     //#endregion
 
-    //#region -- Definición de propiedades --
+    //#region - Definición de propiedades -
 
     /**
      * Obtiene y/o establece la instrucción de Transact-SQL, nombre de la tabla
@@ -95,24 +96,21 @@ class SqlCommand {
     /**
      * Obtiene y/o establece el tiempo de espera (en segundos) antes de
      * finalizar la ejecución de un comando y generar un error.
-     * @default 30
+     * @default 15
      * @returns { number }
      */
     get commandTimeout() {
-        if ( this._commandTimeout > 0 ) {
-            return ( this._commandTimeout / 1000 );
-        }
-        return 0;
+        return ( this._commandTimeout );
     }
 
     /**
      * Obtiene y/o establece el tiempo de espera (en segundos) antes de
      * finalizar la ejecución de un comando y generar un error.
-     * @default 30
+     * @default 15
      */
     set commandTimeout( value ) {
-        if ( value !== ( this._commandTimeout / 1000 ) ) {
-            this._commandTimeout = value * 1000;
+        if ( value !== this._commandTimeout ) {
+            this._commandTimeout = value;
         }
     }
 
@@ -143,7 +141,7 @@ class SqlCommand {
     }
 
     /**
-     * 
+     *
      * @returns { Array<SqlParameter> }
      */
     get parameters() {
@@ -151,6 +149,8 @@ class SqlCommand {
     }
 
     //#endregion
+
+    //#region - Métodos de construcción -
 
     /**
      * Inicializa una nueva instancia de la clase {@link SqlCommand} con una
@@ -166,26 +166,34 @@ class SqlCommand {
         this._connection = connection;
     }
 
+    //#endregion
+
     /**
      * Agrega el objeto {@link SqlParameter} especificado al {@link Array}.
+     * @public
      * @param {SqlParameter} parameter El objeto {@link SqlParameter} a agregar
      * a la lista.
-     * @param {number} direction Especifica si el parámetro es sólo de entrada
-     * o sólo de salida.
-     * @returns { void } 
+     * @param {number} [direction] Especifica si el parámetro es sólo de entrada
+     * o sólo de salida. El valor predeterminado es {@linkcode INPUT}.
+     * @returns { void }
      */
-    addParameter( parameter, direction = ParameterDirection.INPUT ) {
-        parameter.direction = direction;
+    addParameter( parameter, direction ) {
+        if ( direction ) {
+            parameter.direction = direction;
+        }
         this._parameters.push( parameter );
     }
 
     /**
-     *
-     * @returns {Promise<number>}
+     * Ejecuta de manera asíncrona una intrucción de Transact-SQL en la
+     * conexión y devuelve el número de filas afectadas.
+     * @public
+     * @returns {Promise<number>} El número de filas afectadas.
      */
     async executeNonQueryAsync() {
         return ( await /** @type { Promise<number> } */( new Promise(
             ( resolve, reject ) => {
+                const tedious = this.connection.valueOf();
                 const procedure = new Request( this._commandText,
                     ( error, rowCount ) => {
                         ( error )
@@ -193,12 +201,22 @@ class SqlCommand {
                             : resolve( rowCount );
                     }
                 );
-
+                procedure.setTimeout( this.commandTimeout * 1000 );
                 if ( this.parameters.length > 0 ) {
-                    procedure.a
+                    this.parameters.forEach( ( parameter ) => {
+                        ( ParameterDirection.INPUT === parameter.direction )
+                            ? procedure.addParameter(
+                                parameter.name,
+                                parameter.type,
+                                parameter.value,
+                                parameter.parameterOptions )
+                            : reject( 'El comando contiene parámetros de ' +
+                                'salida que no son permitidos.' );
+                    } );
                 }
-
-                this._connection.valueOf()?.callProcedure( procedure );
+                ( tedious !== null )
+                    ? tedious.callProcedure( procedure )
+                    : reject( 'No existe una conexión abierta a SQL Server.' );
             }
         ) ) );
     }
