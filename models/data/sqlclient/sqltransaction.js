@@ -19,25 +19,61 @@ const SqlConnection = require( './sqlconnection' );
 class SqlTransaction {
 
     /**
-     * @private @type { Connection  | null }
+     *
+     * @private @type { SqlConnection }
      */
-    _connection = null;
+    _connection;
+
+    //#region - Definición de propiedades -
+
+    /**
+     * Obtiene el objeto {@link SqlConnection} asociada a la transacción.
+     * @public
+     * @returns { SqlConnection | null }
+     */
+    get connection() {
+        return this._connection;
+    }
+
+    //#endregion
 
     /**
      *
      * @param { SqlConnection } connection
      */
     constructor( connection ) {
-        this._connection = connection.valueOf();
+        /**
+         * @private
+         */
+        this._connection = connection;
     }
 
     /**
      * @returns { void } No retorna ningún valor.
      */
     commit() {
+        if ( this._connection !== null ) {
+            const tedious = this._connection.valueOf();
 
+            if ( tedious !== null ) {
+                tedious.commitTransaction( ( exc ) => error = exc );
+                if ( error ) {
+                    throw error;
+                } `
+                `
+            }
+        } else {
+            throw new Error( 'La conexión a SQL Server no es válida.' );
+        }
     }
 
+    /**
+     * @param {string} name
+     * @returns { void }
+     */
+    rollback( name ) {
+        this._connection?.valueOf()?.rollbackTransaction()
+    }
 }
 
 module.exports = SqlTransaction;

@@ -23,16 +23,17 @@ const SqlTransaction = require( './sqltransaction' );
 class SqlConnection {
 
     /**
+     * El objeto {@link Connection } asociado a la conexión con
+     * SQL Server.
+     * @private @type { Connection }
+     */
+    _connection;
+
+    /**
      * Configuración de conexión a una base de datos.
      * @private @type { ConnectionConfig|undefined }
      */
     _connectionConfig;
-
-    /**
-     * Conexión a una base de datos de SQL Server.
-     * @private @type { Connection|null }
-     */
-    _connection;
 
     /**
      * Obtiene la configuración de conexión a una base de datos.
@@ -52,6 +53,20 @@ class SqlConnection {
         this._connectionConfig = value;
     }
 
+    get connectionTimeout() {
+        if ( this._connectionConfig?.options?.connectTimeout ) {
+            return ( this._connectionConfig.options
+                .connectTimeout / 1000 );
+        }
+        return 15;
+    }
+
+    set connectionTimeout( value ) {
+        if ( this._connectionConfig )
+            if ( )
+        ?.options?.connectTimeout = value;
+    }
+
     /**
      * Crea una nueva instancia de la clase {@link SqlConnection}.
      * @param { ConnectionConfig } [connectionConfig]
@@ -65,7 +80,7 @@ class SqlConnection {
      * @returns { SqlTransaction }
      */
     beginTransaction() {
-        return new SqlTransaction()
+        return new SqlTransaction( this );
     }
 
     /**
@@ -114,7 +129,7 @@ class SqlConnection {
     /**
      * Retorna el objeto {@link Connection} asociado a la conexión.
      * @public
-     * @returns { Connection | null }
+     * @returns { Connection }
      */
     valueOf() {
         return this._connection;
