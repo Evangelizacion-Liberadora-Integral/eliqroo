@@ -3,3 +3,6 @@
 
 # Módulos de NodeJS
 node_modules/*
+
+# Configuración del ambiente.
+.env
