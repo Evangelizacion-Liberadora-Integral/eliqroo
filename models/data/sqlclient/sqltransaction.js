@@ -9,7 +9,6 @@
  * Todos los derechos reservados.
  */
 
-const { Connection } = require( 'tedious' );
 const SqlConnection = require( './sqlconnection' );
 
 /**
@@ -17,12 +16,6 @@ const SqlConnection = require( './sqlconnection' );
  * datos de SQL Server.
  */
 class SqlTransaction {
-
-    /**
-     *
-     * @private @type { SqlConnection }
-     */
-    _connection;
 
     //#region - Definición de propiedades -
 
@@ -38,14 +31,25 @@ class SqlTransaction {
     //#endregion
 
     /**
-     *
-     * @param { SqlConnection } connection
+     * Inicializa una nueva instancia de la clase {@link SqlTransaction} con el
+     * objeto {@link SqlConnection}, nivel de isolicación y nombre asociados.
+     * @param { SqlConnection } connection El objeto {@link SqlConnection}
+     * asociado a la transacción.
+     * @param {number} iso El nivel de isolación en el cual se ejecuta la
+     * transacción de base de datos.
+     * @param {string} transactionName El nombre de la transacción.
      */
-    constructor( connection ) {
+    constructor( connection, transactionName = '', iso = 0x02 ) {
         /**
-         * @private
+         * @private @type {SqlConnection}
          */
         this._connection = connection;
+        this._connection.tedious.beginTransaction(
+            ( error ) => {
+
+
+
+            }, transactionName, iso );
     }
 
     /**
@@ -53,15 +57,9 @@ class SqlTransaction {
      */
     commit() {
         if ( this._connection !== null ) {
-            const tedious = this._connection.valueOf();
+            this._connection.tedious.commitTransaction( ( error ) => {
 
-            if ( tedious !== null ) {
-                tedious.commitTransaction( ( exc ) => error = exc );
-                if ( error ) {
-                    throw error;
-                } `
-                `
-            }
+            } );
         } else {
             throw new Error( 'La conexión a SQL Server no es válida.' );
         }
@@ -72,7 +70,13 @@ class SqlTransaction {
      * @returns { void }
      */
     rollback( name ) {
-        this._connection?.valueOf()?.rollbackTransaction()
+        if ( this._connection !== null ) {
+            this._connection.tedious.rollbackTransaction( ( error ) => {
+
+            } );
+        } else {
+            throw new Error( 'La conexión a SQL Server no es válida.' );
+        }
     }
 }
 

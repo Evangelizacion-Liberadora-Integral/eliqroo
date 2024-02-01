@@ -193,7 +193,6 @@ class SqlCommand {
     async executeNonQueryAsync() {
         return ( await /** @type { Promise<number> } */( new Promise(
             ( resolve, reject ) => {
-                const tedious = this.connection.valueOf();
                 const procedure = new Request( this._commandText,
                     ( error, rowCount ) => {
                         ( error )
@@ -214,9 +213,7 @@ class SqlCommand {
                                 'salida que no son permitidos.' );
                     } );
                 }
-                ( tedious !== null )
-                    ? tedious.callProcedure( procedure )
-                    : reject( 'No existe una conexión abierta a SQL Server.' );
+                this._connection.tedious.callProcedure( procedure );
             }
         ) ) );
     }

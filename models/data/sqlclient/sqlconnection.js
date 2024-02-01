@@ -7,7 +7,7 @@
  * Todos los derechos reservados.
  */
 
-const { Connection } = require( 'tedious' );
+const { Connection, ISOLATION_LEVEL } = require( 'tedious' );
 const { SqlCommand } = require( './sqlcommand' );
 const SqlTransaction = require( './sqltransaction' );
 
@@ -18,7 +18,6 @@ const SqlTransaction = require( './sqltransaction' );
 
 /**
  * Representa una conexión a una base de datos de SQL Server.
- * @since v0.1.0
  */
 class SqlConnection {
 
@@ -27,13 +26,24 @@ class SqlConnection {
      * SQL Server.
      * @private @type { Connection }
      */
-    _connection;
+    _dbConnection;
 
     /**
      * Configuración de conexión a una base de datos.
      * @private @type { ConnectionConfig|undefined }
      */
     _connectionConfig;
+
+    //#region - Definición de propiedades -
+
+    /**
+     * Obtiene el objeto {@link Connection} asociado a la conexión de una base
+     * de datos de SQL Server.
+     * @returns {Connection}
+     */
+    get tedious() {
+        return this._dbConnection;
+    }
 
     /**
      * Obtiene la configuración de conexión a una base de datos.
@@ -53,13 +63,7 @@ class SqlConnection {
         this._connectionConfig = value;
     }
 
-    get connectionTimeout() {
-        if ( this._connectionConfig?.options?.connectTimeout ) {
-            return ( this._connectionConfig.options
-                .connectTimeout / 1000 );
-        }
-        return 15;
-    }
+    //#endregion
 
     /**
      * Crea una nueva instancia de la clase {@link SqlConnection}.
@@ -71,10 +75,15 @@ class SqlConnection {
     }
 
     /**
+     * Inicia una transacción de base de datos.
+     * @param {number} iso El nivel de isolación con el cual debería
+     * ejecutarse la transacción.
+     * El valor predeterminado es {@linkcode READ_COMMITTED}.
+     * @param {string} transactionName El nombre de la transacción.
      * @returns { SqlTransaction }
      */
-    beginTransaction() {
-        return new SqlTransaction( this );
+    beginTransaction( iso = 0x02, transactionName = '' ) {
+        return new SqlTransaction( this, transactionName, iso );
     }
 
     /**
@@ -86,8 +95,8 @@ class SqlConnection {
         await /** @type { Promise<void> } */( new Promise(
             ( resolve, reject ) => {
                 if ( this._connectionConfig ) {
-                    this._connection = new Connection( this._connectionConfig );
-                    this._connection.connect( ( error ) => {
+                    this._dbConnection = new Connection( this._connectionConfig );
+                    this._dbConnection.connect( ( error ) => {
                         ( error )
                             ? reject( error.message )
                             : resolve()
@@ -115,18 +124,9 @@ class SqlConnection {
      * @returns { void }
      */
     close() {
-        if ( this._connection ) {
-            this._connection.close();
+        if ( this._dbConnection ) {
+            this._dbConnection.close();
         }
-    }
-
-    /**
-     * Retorna el objeto {@link Connection} asociado a la conexión.
-     * @public
-     * @returns { Connection }
-     */
-    valueOf() {
-        return this._connection;
     }
 }
 
