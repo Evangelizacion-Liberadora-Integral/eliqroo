@@ -61,12 +61,6 @@ class SqlConnection {
         return 15;
     }
 
-    set connectionTimeout( value ) {
-        if ( this._connectionConfig )
-            if ( )
-        ?.options?.connectTimeout = value;
-    }
-
     /**
      * Crea una nueva instancia de la clase {@link SqlConnection}.
      * @param { ConnectionConfig } [connectionConfig]
